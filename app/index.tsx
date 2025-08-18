@@ -1,15 +1,19 @@
-import { Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Redirect } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-    </View>
-  );
+  const [firstTime, setFirstTime] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkFirstTime = async () => {
+      const seen = await AsyncStorage.getItem("seenOnboarding");
+      setFirstTime(!seen);
+    };
+    checkFirstTime();
+  }, []);
+
+  if (firstTime === null) return null; // splash loading
+
+  return firstTime ? <Redirect href="/onboarding" /> : <Redirect href="/(auth)/login" />;
 }
