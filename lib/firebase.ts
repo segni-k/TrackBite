@@ -1,14 +1,11 @@
 // Import the functions you need from the SDKs you need
-
-import { getAnalytics } from "firebase/analytics";
-
 import { initializeApp, getApp, getApps } from "firebase/app";
-import { initializeAuth, getAuth } from "firebase/auth";
-import { getReactNativePersistence } from "firebase/auth/react-native";
+import { initializeAuth, getReactNativePersistence, getAuth, Auth } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -25,21 +22,22 @@ const firebaseConfig = {
 };
 
 
-// Prevent duplicate init during Fast Refresh
+// ✅ Prevent duplicate init (important for Fast Refresh & production)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-const analytics = getAnalytics(app);
-
-let auth;
+/// ✅ Guard against multiple auth initializations
+// ✅ Initialize auth with persistence (AsyncStorage) only once
+let auth: Auth;
 try {
   auth = initializeAuth(app, {
-    persistence: getReactNativePersistence (AsyncStorage),
+    persistence: getReactNativePersistence(AsyncStorage),
   });
-} catch {
+} catch (err) {
+  // If it's already initialized (Fast Refresh in dev), fallback to getAuth
   auth = getAuth(app);
 }
+// ✅ Singletons for Firestore & Storage
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-export { auth };
-
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+export { app, auth, db, storage };
