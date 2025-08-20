@@ -10,8 +10,8 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
 } from "react-native";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-const auth = getAuth(); // use the default initialized Firebase app's Auth instance
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../../lib/firebase"; // adjust path for your project
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RESEND_COOLDOWN_SECONDS = 60;
