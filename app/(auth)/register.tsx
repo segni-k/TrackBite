@@ -1,82 +1,86 @@
 // app/(auth)/register.tsx
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
-import { useRouter } from "expo-router";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../lib/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+
+
+const CustomHeader = () => (
+      <View style={{ height: 120, backgroundColor: '#2563eb', justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: 'white', fontSize: 35, fontWeight:800 , marginTop:70 }}>Signup</Text>
+      </View>
+    );
 
 export default function Register() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
-    if (!email || !password || !confirmPassword) {
-      Alert.alert("Error", "All fields are required");
-      return;
-    }
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
-      return;
-    }
     try {
-      setLoading(true);
       await createUserWithEmailAndPassword(auth, email, password);
       router.replace("/(tabs)/home");
     } catch (error: any) {
-      Alert.alert("Registration Failed", error.message);
-    } finally {
-      setLoading(false);
+      alert(error.message);
     }
   };
 
   return (
-    <View className="flex-1 bg-white justify-center p-8">
-      <Text className="text-3xl font-bold text-center mb-8 text-blue-600">
-        Create Account
+    <LinearGradient
+      colors={["#2563eb", "#1e3a8a"]}
+      className="flex-1 justify-center px-8"
+    >
+      <Stack.Screen
+        options={{
+          title: 'Signup',
+          headerTitleAlign: "center",
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: '#2563eb' },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          header: () => <CustomHeader />,
+        }}
+      />
+      <Text className="text-white text-3xl font-bold mb-8">
+        Create Your Account 🚀
       </Text>
 
       <TextInput
-        className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
         placeholder="Email"
-        keyboardType="email-address"
+        placeholderTextColor="#cbd5e1"
         value={email}
         onChangeText={setEmail}
+        className="bg-white/20 text-white px-4 py-4 rounded-xl mb-6"
       />
 
       <TextInput
-        className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
         placeholder="Password"
-        secureTextEntry
+        placeholderTextColor="#cbd5e1"
         value={password}
         onChangeText={setPassword}
-      />
-
-      <TextInput
-        className="border border-gray-300 rounded-xl px-4 py-3 mb-6"
-        placeholder="Confirm Password"
         secureTextEntry
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
+        className="bg-white/20 text-white px-4 py-4 rounded-xl mb-8"
       />
 
       <TouchableOpacity
-        className="bg-blue-600 p-4 rounded-2xl shadow-md mb-4"
         onPress={handleRegister}
-        disabled={loading}
+        className="bg-white py-4 rounded-xl mt-6"
       >
-        <Text className="text-white text-center font-semibold text-lg">
-          {loading ? "Signing up..." : "Register"}
+        <Text className="text-blue-600 font-bold text-lg text-center">
+          Sign Up
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
-        <Text className="text-blue-600 text-center">
-          Already have an account? Login
+        <Text className="text-white mt-6 text-center">
+          Already have an account?{" "}
+          <Text className="font-bold underline">Login</Text>
         </Text>
       </TouchableOpacity>
-    </View>
+    </LinearGradient>
   );
 }
