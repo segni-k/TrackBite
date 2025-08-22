@@ -1,10 +1,21 @@
 // components/FoodModal.tsx
 import React, { useMemo, useRef, useState } from "react";
 import {
-  Modal, View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView,
-  Platform
+  Modal,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
 } from "react-native";
-import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
+import {
+  GestureHandlerRootView,
+  Pressable,
+  Swipeable,
+} from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 
 export type Food = {
@@ -64,16 +75,24 @@ export default function FoodModal({
   );
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose} presentationStyle="pageSheet">
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+      presentationStyle="pageSheet"
+      statusBarTranslucent
+    >
       <GestureHandlerRootView style={{ flex: 1 }}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          className="flex-1 bg-white"
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1 bg-white "
         >
           {/* Header */}
-          <View className="flex-row items-center justify-between px-5 py-4 border-b border-gray-200">
-            <Text className="text-lg font-semibold">Add {mealLabel}</Text>
-            <TouchableOpacity onPress={onClose}>
+          <View className="flex-row items-center justify-between px-5 py-4 pt-10 border-b border-gray-100 shadow-sm">
+            <Text className="text-2xl pt-6 font-bold text-gray-600">
+              Add {mealLabel}
+            </Text>
+            <TouchableOpacity onPress={onClose} className="pt-6">
               <Ionicons name="close" size={22} color="#111827" />
             </TouchableOpacity>
           </View>
@@ -90,86 +109,159 @@ export default function FoodModal({
                   <RightAction onPress={() => onDelete(item.id)} />
                 )}
               >
-                <View className="bg-gray-50 rounded-xl px-4 py-3 mb-3 border border-gray-200">
-                  <View className="flex-row justify-between">
-                    <Text className="text-[15px] font-medium text-gray-800">{item.name}</Text>
-                    <Text className="text-gray-500 text-xs">{item.calories} kcal · {item.grams} g</Text>
+                <TouchableWithoutFeedback className="bg-white">
+                  <View className="bg-white rounded-3xl px-4 py-5 mb-5 shadow-lg">
+                    <View className="flex-row justify-between">
+                      <Text className="text-[18px] font-medium text-gray-600">
+                        {item.name}
+                      </Text>
+                      <Text className="text-gray-500 text-xs">
+                        {item.calories} kcal · {item.grams} g
+                      </Text>
+                    </View>
+                    <View className="flex-row justify-between mt-1">
+                      <Text className="text-sm text-blue-600">
+                        Protein {item.protein}g
+                      </Text>
+                      <Text className="text-sm text-amber-600">
+                        Carbs {item.carbs}g
+                      </Text>
+                      <Text className="text-sm text-red-600">
+                        Fat {item.fat}g
+                      </Text>
+                    </View>
                   </View>
-                  <View className="flex-row justify-between mt-1">
-                    <Text className="text-xs text-blue-600">Protein {item.protein}g</Text>
-                    <Text className="text-xs text-amber-600">Carbs {item.carbs}g</Text>
-                    <Text className="text-xs text-red-600">Fat {item.fat}g</Text>
-                  </View>
-                </View>
+                </TouchableWithoutFeedback>
               </Swipeable>
             )}
             ListEmptyComponent={
-              <View className="items-center mt-8">
-                <Text className="text-gray-400">No foods yet.</Text>
-              </View>
+              <Pressable onPress={() => setAdding(true)}>
+                <View className="px-5 my-8 shadow-lg ">
+                  <View className="bg-neutral-100 rounded-2xl p-5 shadow-md">
+                    <View className=" items-center px-4">
+                      <View className="items-center gap-3">
+                        <Ionicons name="add-circle" size={58} color="#9ca3af" />
+                        <Text className="text-sm text-gray-400">
+                          Tap + to add your first meal of the day
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </Pressable>
             }
           />
 
           {/* Add Bar */}
           {adding ? (
-            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-              <View className="flex-row gap-2 mb-2">
+            <View className="bg-white border rounded-xl border-gray-200 p-4 gap-4">
+              <View className=" mb-2">
+                <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
+                  Food Name
+                </Text>
                 <TextInput
-                  className="flex-1 bg-gray-50 rounded-xl px-3 py-3 border border-gray-200"
+                  className=" bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
                   placeholder="Food name"
                   value={form.name}
                   onChangeText={(t) => setForm({ ...form, name: t })}
                 />
+              </View>
+              <View className="mb-2">
+                <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
+                  Macros (per grams)
+                </Text>
                 <TextInput
-                  className="w-24 bg-gray-50 rounded-xl px-3 py-3 border border-gray-200"
+                  className=" bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
                   placeholder="Grams"
                   keyboardType="numeric"
                   value={String(form.grams || "")}
-                  onChangeText={(t) => setForm({ ...form, grams: Number(t) || 0 })}
-                />
-              </View>
-              <View className="flex-row gap-2">
-                <TextInput
-                  className="flex-1 bg-gray-50 rounded-xl px-3 py-3 border border-gray-200"
-                  placeholder="Calories"
-                  keyboardType="numeric"
-                  value={String(form.calories || "")}
-                  onChangeText={(t) => setForm({ ...form, calories: Number(t) || 0 })}
-                />
-                <TextInput
-                  className="w-24 bg-gray-50 rounded-xl px-3 py-3 border border-gray-200"
-                  placeholder="P"
-                  keyboardType="numeric"
-                  value={String(form.protein || "")}
-                  onChangeText={(t) => setForm({ ...form, protein: Number(t) || 0 })}
-                />
-                <TextInput
-                  className="w-24 bg-gray-50 rounded-xl px-3 py-3 border border-gray-200"
-                  placeholder="C"
-                  keyboardType="numeric"
-                  value={String(form.carbs || "")}
-                  onChangeText={(t) => setForm({ ...form, carbs: Number(t) || 0 })}
-                />
-                <TextInput
-                  className="w-24 bg-gray-50 rounded-xl px-3 py-3 border border-gray-200"
-                  placeholder="F"
-                  keyboardType="numeric"
-                  value={String(form.fat || "")}
-                  onChangeText={(t) => setForm({ ...form, fat: Number(t) || 0 })}
+                  onChangeText={(t) =>
+                    setForm({ ...form, grams: Number(t) || 0 })
+                  }
                 />
               </View>
 
-              <View className="flex-row justify-end gap-3 mt-3">
+              <View className="flex-row justify-between mb-4">
+                <View className="w-[42%]">
+                  <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
+                    Calories
+                  </Text>
+                  <TextInput
+                    className="w-full flex-row bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
+                    placeholder="Calories"
+                    keyboardType="numeric"
+                    value={String(form.calories || "")}
+                    onChangeText={(t) =>
+                      setForm({ ...form, calories: Number(t) || 0 })
+                    }
+                  />
+                </View>
+                <View className="w-[42%]">
+                  <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
+                    Protein
+                  </Text>
+                  <TextInput
+                    className="w-full bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
+                    placeholder="P"
+                    keyboardType="numeric"
+                    value={String(form.protein || "")}
+                    onChangeText={(t) =>
+                      setForm({ ...form, protein: Number(t) || 0 })
+                    }
+                  />
+                </View>
+              </View>
+              <View className="flex-row justify-between gap-4 mb-6 w-full">
+                <View className=" w-[42%]">
+                  <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
+                    Carbs
+                  </Text>
+
+                  <TextInput
+                    className="w-full bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
+                    placeholder="C"
+                    keyboardType="numeric"
+                    value={String(form.carbs || "")}
+                    onChangeText={(t) =>
+                      setForm({ ...form, carbs: Number(t) || 0 })
+                    }
+                  />
+                </View>
+                <View className="w-[42%]">
+                  <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
+                    Fat
+                  </Text>
+
+                  <TextInput
+                    className="w-full bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
+                    placeholder="F"
+                    keyboardType="numeric"
+                    value={String(form.fat || "")}
+                    onChangeText={(t) =>
+                      setForm({ ...form, fat: Number(t) || 0 })
+                    }
+                  />
+                </View>
+              </View>
+
+              <View className="flex-row justify-between gap-3 mt-3 mb-4">
                 <TouchableOpacity
-                  onPress={() => { setAdding(false); reset(); }}
-                  className="px-4 py-3 rounded-xl border border-gray-300"
+                  onPress={() => {
+                    setAdding(false);
+                    reset();
+                  }}
+                  className="px-4 py-4 flex-1 items-center rounded-3xl border border-blue-300"
                 >
-                  <Text className="text-gray-700">Cancel</Text>
+                  <Text className="text-gray-700 font-semibold">Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   disabled={!canSave}
-                  onPress={() => { onAdd(form); setAdding(false); reset(); }}
-                  className={`px-4 py-3 rounded-xl ${canSave ? "bg-green-500" : "bg-gray-300"}`}
+                  onPress={() => {
+                    onAdd(form);
+                    setAdding(false);
+                    reset();
+                  }}
+                  className={`px-4 py-4 flex-1 rounded-3xl items-center ${canSave ? "bg-green-500" : "bg-green-400"}`}
                 >
                   <Text className="text-white font-semibold">Save</Text>
                 </TouchableOpacity>

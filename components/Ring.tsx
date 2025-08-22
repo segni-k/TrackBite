@@ -13,7 +13,7 @@ type Props = {
 };
 
 export default function Ring({
-  size = 92,
+  size = 82,
   stroke = 5,
   value,
   goal,

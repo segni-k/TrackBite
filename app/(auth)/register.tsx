@@ -1,5 +1,5 @@
 // app/(auth)/register.tsx
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
@@ -28,6 +28,7 @@ export default function Register() {
   };
 
   return (
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
     <LinearGradient
       colors={["#2563eb", "#1e3a8a"]}
       className="flex-1 justify-center px-8"
@@ -82,5 +83,6 @@ export default function Register() {
         </Text>
       </TouchableOpacity>
     </LinearGradient>
+    </KeyboardAvoidingView>
   );
 }

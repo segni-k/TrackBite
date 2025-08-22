@@ -1,11 +1,11 @@
 // app/(tabs)/home.tsx
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import React, { useMemo, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import Ring from "../../components/Ring";
-import FoodModal, { Food } from "../../components/FoodModal";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
+import FoodModal, { Food } from "../../components/FoodModal";
+import Ring from "../../components/Ring";
 
 // ------- Mock data per meal (replace via Firebase later) -------
 type MealKey = "Breakfast" | "Lunch" | "Dinner";
@@ -27,7 +27,7 @@ const initialMeals: MealState = {
 };
 
 // Daily macro goals (editable / from user profile later)
-const GOALS = { carbs: 220, protein: 180, fat: 75 };
+const GOALS = { carbs: 220, protein: 180, fat: 75, calories: 2000 };
 
 export default function HomeScreen() {
   const [meals, setMeals] = useState<MealState>(initialMeals);
@@ -67,11 +67,11 @@ export default function HomeScreen() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView className="flex-1 bg-white">
-        <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}  >
           {/* Header (logo left, bell right) */}
-          <View className="px-5 pt-3 pb-4 bg-green-500 rounded-b-3xl shadow">
+          <View className="px-5 pt-4 pb-14 bg-green-500 rounded-b-3xl shadow">
             <View className="flex-row justify-between items-center">
-              <Text className="text-white text-xl font-extrabold">TrackBite</Text>
+              <Text className="text-white text-2xl font-extrabold">TrackBite</Text>
               <TouchableOpacity>
                 <Ionicons name="notifications-outline" size={22} color="#fff" />
               </TouchableOpacity>
@@ -97,21 +97,57 @@ export default function HomeScreen() {
             </View>
           </View>
 
+
+           <View className="px-5 -mt-8 shadow-lg ">
+            <View className="bg-white rounded-2xl p-5 shadow-md">
+              <View className="flex-row justify-between items-center px-4">
+                <View className="items-center">
+                  <Text className="font-bold text-5xl"> {Math.max(0, 2000 - totals.calories)}</Text>
+                  <Text className="text-sm">Calories left</Text>
+                </View>
+                <Ring value={totals.calories} stroke={8} size={110} goal={GOALS.calories} label="calories eaten" color="#232221ff" />
+              </View>
+            </View>
+          </View>
+
           {/* Macro rings card */}
-          <View className="px-5 -mt-8">
-            <View className="bg-white rounded-2xl p-5 shadow-sm">
-              <Text className="text-gray-800 font-semibold mb-4">Macros</Text>
+          <View className="px-5 mt-8 shadow-lg">
+            <View className="bg-white rounded-2xl p-5 shadow-md">
+              <View className="flex-row justify-between items-center mb-4">
+                <Text className="text-gray-900 text-lg font-semibold">Daily Macros</Text>
+                <Text className="text-gray-500 text-sm">Goal: {GOALS.calories} kcal</Text>
+              </View>
               <View className="flex-row justify-between">
-                <Ring value={totals.carbs} goal={GOALS.carbs} label="Carbs" color="#ef4444" />
-                <Ring value={totals.protein} goal={GOALS.protein} label="Protein" color="#3b82f6" />
-                <Ring value={totals.fat} goal={GOALS.fat} label="Fat" color="#f59e0b" />
+                <View className="bg-white rounded-2xl p-2 shadow-md">
+                  <Ring value={totals.carbs} goal={GOALS.carbs} label="Carbs" color="#ef4444" />
+                </View>
+                <View className="bg-white rounded-2xl p-2 shadow-md">
+                  <Ring value={totals.protein} goal={GOALS.protein} label="Protein" color="#3b82f6" />
+                </View>
+                <View className="bg-white rounded-2xl p-2 shadow-md">
+                  <Ring value={totals.fat} goal={GOALS.fat} label="Fat" color="#f59e0b" />
+                </View>
               </View>
             </View>
           </View>
 
           {/* Meals list (cards open modal) */}
-          <View className="px-5 mt-6">
-            <Text className="text-gray-900 text-lg font-semibold mb-2">Meals</Text>
+          <View className="px-5 mt-8">
+            <Text className="text-gray-900 text-2xl font-bold mb-2">Uploaded Meals</Text>
+
+            {Object.values(meals).every(arr => arr.length === 0) && (
+            <View className="px-5 my-8 shadow-lg ">
+            <View className="bg-neutral-100 rounded-2xl p-5 shadow-md">
+              <View className=" items-center px-4">
+                <View className="items-center gap-3">
+                  <Ionicons name="add-circle" size={58} color="#9ca3af" />
+                  <Text className="text-sm text-gray-400">Tap + to add your first meal of the day</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+          )}
+           
 
             {/** Meal Card Component */}
             {(Object.keys(meals) as MealKey[]).map((key) => {
@@ -120,13 +156,18 @@ export default function HomeScreen() {
                 <TouchableOpacity
                   key={key}
                   onPress={() => setActiveMeal(key)}
-                  className="bg-white rounded-2xl p-4 mb-4 shadow-sm"
-                >
+                  className="bg-white rounded-2xl p-5 mb-3 shadow-sm flex-row justify-between gap-2"
+                > 
+                 <View className="flex-1">
                   <View className="flex-row justify-between items-center">
-                    <Text className="text-base font-semibold text-gray-900">{key}</Text>
+                    <Text className="text-xl font-bold text-gray-700">{key}</Text>
                     <Text className="text-green-600 font-bold">{kcal} kcal</Text>
                   </View>
                   <Text className="text-gray-500 text-xs mt-1">Tap to view & add foods</Text>
+                  </View>
+                  <View>
+                    <Ionicons name="chevron-forward" size={24} color="#9ca3af" />
+                  </View>
                 </TouchableOpacity>
               );
             })}

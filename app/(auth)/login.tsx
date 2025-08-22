@@ -1,5 +1,5 @@
 // app/(auth)/login.tsx
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, Stack, useRouter } from "expo-router";
 import { useState } from "react";
@@ -28,10 +28,11 @@ export default function Login() {
   };
 
   return (
-    <LinearGradient
-      colors={["#1ef454ff", "#1e8a4bff"]}
-      className="flex-1 justify-center px-8"
-    >
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <LinearGradient
+        colors={["#1ef454ff", "#1e8a4bff"]}
+        className="flex-1 justify-center px-8"
+      >
         <Stack.Screen
         options={{
           title: 'Login',
@@ -81,5 +82,6 @@ export default function Login() {
         </Text>
       </TouchableOpacity>
     </LinearGradient>
+    </KeyboardAvoidingView>
   );
 }

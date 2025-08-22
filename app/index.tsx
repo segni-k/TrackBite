@@ -15,5 +15,5 @@ export default function Index() {
 
   if (firstTime === null) return null; // splash loading
 
-  return firstTime ? <Redirect href="/onboarding" /> : <Redirect href="/(auth)/login" />;
+  return firstTime ? <Redirect href="/onboarding" /> : <Redirect href="/(tabs)/home" />;
 }
