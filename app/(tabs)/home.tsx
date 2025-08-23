@@ -1,8 +1,9 @@
 // app/(tabs)/home.tsx
 import { Ionicons} from "@expo/vector-icons";
-import React, { useMemo, useState } from "react";
+import React, { use, useMemo, useState } from "react";
 import {
   Platform,
+  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -17,6 +18,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import FoodModal, { Food } from "../../components/FoodModal";
 import Ring from "../../components/Ring";
 import FoodComponent from "@/components/Food";
+import { useRouter } from "expo-router";
 
 // ------- Mock data per meal (replace via Firebase later) -------
 type MealKey = "Breakfast" | "Lunch" | "Dinner";
@@ -85,6 +87,7 @@ const initialMeals: MealState = {
   ],
 };
 
+const router = useRouter();
 // Daily macro goals (editable / from user profile later)
 const GOALS = { carbs: 220, protein: 180, fat: 75, calories: 2000 };
 
@@ -139,7 +142,7 @@ export default function HomeScreen() {
               <Text className="text-black text-4xl font-extrabold">
                 TrackBite
               </Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/(modals)/notification")}>
                 <Ionicons name="notifications-outline" size={22} color="#000" />
               </TouchableOpacity>
             </View>
@@ -159,10 +162,10 @@ export default function HomeScreen() {
                 <Text className="text-black text-lg font-bold">
                   {Math.max(0, 2000 - totals.calories)}
                 </Text>
-                <Text className="text-green-100 text-xs">kcal left</Text>
+                <Text className="text-gray-700 text-xs">kcal left</Text>
               </View>
               <View className="items-center">
-                <Text className="text-black text-lg font-bold">0</Text>
+                <Text className="text-black text-lg font-bold">345</Text>
                 <Text className="text-gray-700 text-xs">burned</Text>
               </View>
             </View>
@@ -330,6 +333,22 @@ export default function HomeScreen() {
                 )}
                 scrollEnabled={false}
                 keyExtractor={(item) => item.key}
+                        ListEmptyComponent={
+                            <Pressable onPress={() => {}}>
+                              <View className="px-5 my-8 shadow-lg ">
+                                <View className="bg-neutral-100 rounded-2xl p-5 shadow-md">
+                                  <View className="items-center px-4">
+                                    <View className="items-center gap-3">
+                                      <Ionicons name="add-circle" size={58} color="#9ca3af" />
+                                      <Text className="text-sm text-gray-400">
+                                        Tap + to add your first meal of the day
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </View>
+                              </View>
+                            </Pressable>
+                          }
               />
             </View>
 
