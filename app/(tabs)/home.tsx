@@ -134,36 +134,36 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Header (logo left, bell right) */}
-          <View className="px-5 pt-4 pb-14 bg-green-500 rounded-b-3xl shadow">
+          <View className="px-5 pt-4 pb-14 bg-stone-150 rounded-b-3xl shadow">
             <View className="flex-row justify-between items-center">
-              <Text className="text-white text-4xl font-extrabold">
+              <Text className="text-black text-4xl font-extrabold">
                 TrackBite
               </Text>
               <TouchableOpacity>
-                <Ionicons name="notifications-outline" size={22} color="#fff" />
+                <Ionicons name="notifications-outline" size={22} color="#000" />
               </TouchableOpacity>
             </View>
-            <Text className="text-green-100 text-sm mt-2">
+            <Text className="text-gray-500 text-sm mt-2">
               Today, {todayStr}
             </Text>
 
             {/* Summary row (like pic) */}
             <View className="flex-row justify-between mt-4">
               <View className="items-center">
-                <Text className="text-white text-lg font-bold">
+                <Text className="text-black text-lg font-bold">
                   {totals.calories}
                 </Text>
-                <Text className="text-green-100 text-xs">kcal eaten</Text>
+                <Text className="text-gray-700 text-xs">kcal eaten</Text>
               </View>
               <View className="items-center">
-                <Text className="text-white text-lg font-bold">
+                <Text className="text-black text-lg font-bold">
                   {Math.max(0, 2000 - totals.calories)}
                 </Text>
                 <Text className="text-green-100 text-xs">kcal left</Text>
               </View>
               <View className="items-center">
-                <Text className="text-white text-lg font-bold">0</Text>
-                <Text className="text-green-100 text-xs">burned</Text>
+                <Text className="text-black text-lg font-bold">0</Text>
+                <Text className="text-gray-700 text-xs">burned</Text>
               </View>
             </View>
           </View>
