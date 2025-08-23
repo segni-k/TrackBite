@@ -1,15 +1,14 @@
 // components/FoodModal.tsx
 import React, { useMemo, useRef, useState } from "react";
 import {
-  Modal,
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   FlatList,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
+  TextInput,
 } from "react-native";
 import {
   GestureHandlerRootView,
@@ -17,6 +16,7 @@ import {
   Swipeable,
 } from "react-native-gesture-handler";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import FoodComponent from "@/components/Food";
 
 export type Food = {
   id: string;
@@ -37,242 +37,165 @@ type Props = {
   onDelete: (foodId: string) => void;
 };
 
-export default function FoodModal({
-  visible,
-  mealLabel,
-  foods,
-  onClose,
-  onAdd,
-  onDelete,
-}: Props) {
-  const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState<Omit<Food, "id">>({
-    name: "",
-    grams: 0,
-    calories: 0,
-    protein: 0,
-    carbs: 0,
-    fat: 0,
-  });
+const foods = [
+  {
+    title: "Omelette",
+    key: "item1",
+    emoji: "🍳",
+    image:
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+    calories: 240,
+    content: ["15g egg", "10g cheese", "5g spinach"],
+  },
+  {
+    title: "Avocado Toast",
+    key: "item4",
+    emoji: "🥑",
+    image:
+      "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80",
+    calories: 210,
+    content: ["50g bread", "30g avocado", "5g olive oil"],
+  },
+  {
+    title: "Steak",
+    key: "item6",
+    emoji: "🥩",
+    image:
+      "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=400&q=80",
+    calories: 400,
+    content: ["80g beef", "10g butter", "5g pepper", "5g garlic"],
+  },
+  {
+    title: "Milkshake",
+    key: "item9",
+    emoji: "🥤",
+    image:
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+    calories: 220,
+    content: ["100g milk", "20g ice cream", "10g chocolate", "5g sugar"],
+  },
+  {
+    title: "Egg Fried Rice",
+    key: "item10",
+    emoji: "🍚",
+    image:
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+    calories: 280,
+    content: ["50g rice", "15g egg", "10g peas", "5g carrot"],
+  },
+  {
+    title: "Shrimp Sushi",
+    key: "item11",
+    emoji: "🍣",
+    image:
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+    calories: 190,
+    content: ["30g rice", "20g shrimp", "5g seaweed", "5g cucumber"],
+  },
+  {
+    title: "Cheeseburger",
+    key: "item12",
+    emoji: "🍔",
+    image:
+      "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=400&q=80",
+    calories: 303,
+    content: ["60g beef", "20g cheese", "40g bun", "10g lettuce"],
+  },
+  {
+    title: "Fried Shrimp",
+    key: "item15",
+    emoji: "🍤",
+    image:
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+    calories: 240,
+    content: ["50g shrimp", "20g flour", "10g oil", "5g spices"],
+  },
+  {
+    title: "Veggie Pizza",
+    key: "item16",
+    emoji: "🍕",
+    image:
+      "https://images.unsplash.com/photo-1542281286-9e0a16bb7366?auto=format&fit=crop&w=400&q=80",
+    calories: 330,
+    content: ["60g dough", "30g tomato sauce", "20g cheese", "20g veggies"],
+  },
+];
+export default function FoodModal({ onClose }: Props) {
+  const [searchText, setSearchText] = useState("");
 
-  const reset = () =>
-    setForm({ name: "", grams: 0, calories: 0, protein: 0, carbs: 0, fat: 0 });
-
-  const canSave = useMemo(
-    () => form.name.trim().length > 0 && form.grams > 0 && form.calories >= 0,
-    [form]
-  );
-
-  const RightAction = ({ onPress }: { onPress: () => void }) => (
-    <TouchableOpacity
-      onPress={onPress}
-      className="bg-red-500 items-center justify-center px-5"
-      style={{ width: 88, height: "100%" }}
-    >
-      <Ionicons name="trash-outline" size={22} color="#fff" />
-      <Text className="text-white text-xs mt-1">Delete</Text>
-    </TouchableOpacity>
-  );
+  // Filter foods based on searchText
+  const filteredFoods = useMemo(() => {
+    if (!searchText.trim()) return foods;
+    return foods.filter((food) =>
+      food.title.toLowerCase().includes(searchText.toLowerCase())
+    );
+  }, [searchText]);
 
   return (
-  
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          className="flex-1 bg-white "
-        >
-          {/* Header */}
-          <View className="flex-row items-center justify-between px-5 py-4 pt-10 border-b border-gray-100 shadow-sm">
-            <Text className="text-2xl pt-6 font-bold text-gray-600">
-              Add Your First Meal of the Day
-            </Text>
-            <TouchableOpacity onPress={onClose} className="pt-6">
-              <FontAwesome5 name="bullseye" size={26} color="#333" />
-            </TouchableOpacity>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1 bg-white "
+      >
+      
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-5 py-4 pt-10 border-b border-gray-100 shadow-sm">
+          <Text className="text-2xl pt-6 font-bold text-gray-600">
+            Add Your First Meal of the Day
+          </Text>
+          <TouchableOpacity onPress={onClose} className="pt-6">
+            <FontAwesome5 name="bullseye" size={26} color="#333" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Search Bar */}
+        <View className="px-5 pt-4">
+          <View className="flex-row items-center bg-gray-100 rounded-xl px-4 py-2">
+            <Ionicons name="search" size={20} color="#9ca3af" />
+            <TextInput
+              className="flex-1 ml-3 text-base text-gray-700"
+              placeholder="Search meals..."
+              placeholderTextColor="#9ca3af"
+              value={searchText}
+              onChangeText={setSearchText}
+            />
           </View>
-
-          {/* List */}
-          <FlatList
-            data={foods}
-            keyExtractor={(f) => f.id}
-            contentContainerClassName="px-5 pt-3 pb-28"
-            renderItem={({ item }) => (
-              <Swipeable
-                overshootRight={false}
-                renderRightActions={() => (
-                  <RightAction onPress={() => onDelete(item.id)} />
-                )}
-              >
-                <TouchableWithoutFeedback className="bg-white">
-                  <View className="bg-white rounded-3xl px-4 py-5 mb-5 shadow-lg">
-                    <View className="flex-row justify-between">
-                      <Text className="text-[18px] font-medium text-gray-600">
-                        {item.name}
-                      </Text>
-                      <Text className="text-gray-500 text-xs">
-                        {item.calories} kcal · {item.grams} g
-                      </Text>
-                    </View>
-                    <View className="flex-row justify-between mt-1">
-                      <Text className="text-sm text-blue-600">
-                        Protein {item.protein}g
-                      </Text>
-                      <Text className="text-sm text-amber-600">
-                        Carbs {item.carbs}g
-                      </Text>
-                      <Text className="text-sm text-red-600">
-                        Fat {item.fat}g
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableWithoutFeedback>
-              </Swipeable>
-            )}
-            ListEmptyComponent={
-              <Pressable onPress={() => setAdding(true)}>
-                <View className="px-5 my-8 shadow-lg ">
-                  <View className="bg-neutral-100 rounded-2xl p-5 shadow-md">
-                    <View className=" items-center px-4">
-                      <View className="items-center gap-3">
-                        <Ionicons name="add-circle" size={58} color="#9ca3af" />
-                        <Text className="text-sm text-gray-400">
-                          Tap + to add your first meal of the day
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </Pressable>
-            }
-          />
-
-          {/* Add Bar */}
-          {adding ? (
-            <View className="bg-white border rounded-xl border-gray-200 p-4 gap-4">
-              <View className=" mb-2">
-                <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
-                  Food Name
-                </Text>
-                <TextInput
-                  className=" bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
-                  placeholder="Food name"
-                  value={form.name}
-                  onChangeText={(t) => setForm({ ...form, name: t })}
-                />
-              </View>
-              <View className="mb-2">
-                <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
-                  Macros (per grams)
-                </Text>
-                <TextInput
-                  className=" bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
-                  placeholder="Grams"
-                  keyboardType="numeric"
-                  value={String(form.grams || "")}
-                  onChangeText={(t) =>
-                    setForm({ ...form, grams: Number(t) || 0 })
-                  }
-                />
-              </View>
-
-              <View className="flex-row justify-between mb-4">
-                <View className="w-[42%]">
-                  <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
-                    Calories
-                  </Text>
-                  <TextInput
-                    className="w-full flex-row bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
-                    placeholder="Calories"
-                    keyboardType="numeric"
-                    value={String(form.calories || "")}
-                    onChangeText={(t) =>
-                      setForm({ ...form, calories: Number(t) || 0 })
-                    }
-                  />
-                </View>
-                <View className="w-[42%]">
-                  <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
-                    Protein
-                  </Text>
-                  <TextInput
-                    className="w-full bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
-                    placeholder="P"
-                    keyboardType="numeric"
-                    value={String(form.protein || "")}
-                    onChangeText={(t) =>
-                      setForm({ ...form, protein: Number(t) || 0 })
-                    }
-                  />
-                </View>
-              </View>
-              <View className="flex-row justify-between gap-4 mb-6 w-full">
-                <View className=" w-[42%]">
-                  <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
-                    Carbs
-                  </Text>
-
-                  <TextInput
-                    className="w-full bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
-                    placeholder="C"
-                    keyboardType="numeric"
-                    value={String(form.carbs || "")}
-                    onChangeText={(t) =>
-                      setForm({ ...form, carbs: Number(t) || 0 })
-                    }
-                  />
-                </View>
-                <View className="w-[42%]">
-                  <Text className="text-md font-semibold text-gray-500 mb-2 px-1">
-                    Fat
-                  </Text>
-
-                  <TextInput
-                    className="w-full bg-gray-50 rounded-xl px-3 py-4 border border-gray-200"
-                    placeholder="F"
-                    keyboardType="numeric"
-                    value={String(form.fat || "")}
-                    onChangeText={(t) =>
-                      setForm({ ...form, fat: Number(t) || 0 })
-                    }
-                  />
-                </View>
-              </View>
-
-              <View className="flex-row justify-between gap-3 mt-3 mb-4">
-                <TouchableOpacity
-                  onPress={() => {
-                    setAdding(false);
-                    reset();
-                  }}
-                  className="px-4 py-4 flex-1 items-center rounded-3xl border border-blue-300"
-                >
-                  <Text className="text-gray-700 font-semibold">Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  disabled={!canSave}
-                  onPress={() => {
-                    onAdd(form);
-                    setAdding(false);
-                    reset();
-                  }}
-                  className={`px-4 py-4 flex-1 rounded-3xl items-center ${canSave ? "bg-green-500" : "bg-green-400"}`}
-                >
-                  <Text className="text-white font-semibold">Save</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : (
-            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-              <TouchableOpacity
-                onPress={() => setAdding(true)}
-                className="bg-green-500 rounded-2xl py-4 items-center"
-              >
-                <Text className="text-white font-semibold">+ Add food</Text>
-              </TouchableOpacity>
-            </View>
+        </View>
+        {/* Food List */}
+        <FlatList
+          data={filteredFoods}
+          keyExtractor={(item) => item.key}
+          contentContainerClassName="px-5 pt-3 pb-28"
+          renderItem={({ item }) => (
+            <FoodComponent
+              title={item.title}
+              key={item.key}
+              emoji={item.emoji}
+              image={item.image}
+              calories={item.calories}
+              content={item.content.join(",   ")}
+            />
           )}
-        </KeyboardAvoidingView>
-      </GestureHandlerRootView>
-    
+          ListEmptyComponent={
+            <Pressable onPress={() => {}}>
+              <View className="px-5 my-8 shadow-lg ">
+                <View className="bg-neutral-100 rounded-2xl p-5 shadow-md">
+                  <View className="items-center px-4">
+                    <View className="items-center gap-3">
+                      <Ionicons name="add-circle" size={58} color="#9ca3af" />
+                      <Text className="text-sm text-gray-400">
+                        Tap + to add your first meal of the day
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </Pressable>
+          }
+        />
+
+        {/* Add Bar */}
+      </KeyboardAvoidingView>
+    </GestureHandlerRootView>
   );
 }
