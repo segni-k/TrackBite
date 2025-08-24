@@ -122,7 +122,8 @@ const notifications: Notification[] = [
 ];
 
 const NotificationItem = ({ notification, onPress }: { notification: Notification; onPress: () => void }) => (
-    <TouchableOpacity className={`bg-gray-100 p-4 rounded-lg mb-3 ${!notification.read && 'border-l-4 border-blue-500'}`}
+    <>
+    <TouchableOpacity className={`bg-gray-100 p-4 rounded-lg mb-3 ${!notification.read && 'border-l-4 border-blue-500 bg-blue-100'}`}
         onPress={onPress}
         activeOpacity={0.7}
     >
@@ -130,8 +131,11 @@ const NotificationItem = ({ notification, onPress }: { notification: Notificatio
             <Text className='text-base font-semibold'>{notification.title}</Text>
             <Text className='text-xs text-gray-500'>{notification.date}</Text>
         </View>
-        <Text className='text-sm text-gray-800'>{notification.message}</Text>
+        <Text className='text-md text-gray-800'>{notification.message}</Text>
     </TouchableOpacity>
+      <Text className='text-xs text-gray-500'>{notification.date}</Text>
+    </>
+    
 );
 
 const NotificationPage = () => {
@@ -186,6 +190,7 @@ const NotificationPage = () => {
                 <Text className='text-2xl font-bold'>Notifications</Text>
             </View>
             <FlatList
+                contentContainerStyle={{ paddingBottom: 100, gap: 12 }}
                 data={notifications}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item) => item.id}
@@ -195,7 +200,7 @@ const NotificationPage = () => {
                         onPress={() => handlePress(item.id)}
                     />
                 )}
-                ListEmptyComponent={<Text className='text-center text-gray-500 mt-8 text-base'>No notifications yet.</Text>}
+                ListEmptyComponent={<Text className='text-center text-gray-500 mt-8 text-xl'>No notifications yet.</Text>}
             />
         </View>
         </SafeAreaView>
