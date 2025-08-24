@@ -1,5 +1,5 @@
 // app/(tabs)/home.tsx
-import { Ionicons} from "@expo/vector-icons";
+import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import React, { use, useMemo, useState } from "react";
 import {
   Platform,
@@ -19,6 +19,7 @@ import FoodModal, { Food } from "../../components/FoodModal";
 import Ring from "../../components/Ring";
 import FoodComponent from "@/components/Food";
 import { useRouter } from "expo-router";
+import StreakModal from "@/components/StreakModal";
 
 // ------- Mock data per meal (replace via Firebase later) -------
 type MealKey = "Breakfast" | "Lunch" | "Dinner";
@@ -94,6 +95,17 @@ const GOALS = { carbs: 220, protein: 180, fat: 75, calories: 2000 };
 export default function HomeScreen() {
   const [meals, setMeals] = useState<MealState>(initialMeals);
   const [activeMeal, setActiveMeal] = useState<MealKey | null>(null);
+  const [showStreak, setShowStreak] = useState(false);
+
+  const streakData = [
+    { label: "Mon", active: true },
+    { label: "Tue", active: true },
+    { label: "Wed", active: true },
+    { label: "Thu", active: true },
+    { label: "Fri", active: false },
+    { label: "Sat", active: false },
+    { label: "Sun", active: false },
+  ];
 
   // ---- Derived totals (used by rings and summary) ----
   const totals = useMemo(() => {
@@ -138,13 +150,43 @@ export default function HomeScreen() {
         >
           {/* Header (logo left, bell right) */}
           <View className="px-5 pt-4 pb-14 bg-stone-150 rounded-b-3xl shadow">
-            <View className="flex-row justify-between items-center">
+            <View className="flex-row justify-between items-center pr-3">
               <Text className="text-black text-4xl font-extrabold">
                 TrackBite
               </Text>
-              <TouchableOpacity onPress={() => router.push("/(modals)/notification")}>
-                <Ionicons name="notifications-outline" size={22} color="#000" />
-              </TouchableOpacity>
+              <View className="flex-row gap-3">
+                <View className="">
+                  <StreakModal
+                    visible={showStreak}
+                    onClose={() => setShowStreak(false)}
+                    streakData={streakData}
+                  />
+                </View>
+                <TouchableOpacity
+                  onPress={() => setShowStreak(true)}
+                  className="flex-row items-center bg-white p-1 rounded-full shadow"
+                >
+                  {/** <MaterialIcons
+                    name="local-fire-department"
+                    size={24}
+                    color="#f59a39e0"
+                  /> */}
+                  <Text className="text-3xl">🔥</Text>
+                  <Text className="text-3xl font-semibold pr-2 text-gray-500">
+                    4
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => router.push("/(modals)/notification")}
+                  className="bg-white p-2 rounded-full shadow"
+                >
+                  <Ionicons
+                    name="notifications-outline"
+                    size={24}
+                    color="#000"
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
             <Text className="text-gray-500 text-sm mt-2">
               Today, {todayStr}
@@ -233,124 +275,152 @@ export default function HomeScreen() {
             </View>
           </View>
 
-            <View className="px-5 mt-8">
-              <Text className="text-gray-700 text-3xl font-bold mb-2">
-                Recently Uploaded
-              </Text>
-              <FlatList
-                ItemSeparatorComponent={
-                  Platform.OS !== "android"
-                    ? ({ highlighted }: any) => (
-                        <View
-                          className={`h-[1px] bg-gray-200 ${highlighted ? "ml-0" : ""}`}
-                        />
-                      )
-                    : undefined
-                }
-                data={[
-                  {
-                    title: "Omelette",
-                    key: "item1",
-                    emoji: "🍳",
-                    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
-                    calories: 240,
-                    content: ["15g egg", "10g cheese", "5g spinach"],
-                  },
-                  {
-                    title: "Avocado Toast",
-                    key: "item4",
-                    emoji: "🥑",
-                    image: "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80",
-                    calories: 210,
-                    content: ["50g bread", "30g avocado", "5g olive oil"],
-                  },
-                  {
-                    title: "Steak",
-                    key: "item6",
-                    emoji: "🥩",
-                    image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=400&q=80",
-                    calories: 400,
-                    content: ["80g beef", "10g butter", "5g pepper", "5g garlic"],
-                  },
-                  {
-                    title: "Milkshake",
-                    key: "item9",
-                    emoji: "🥤",
-                    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
-                    calories: 220,
-                    content: ["100g milk", "20g ice cream", "10g chocolate", "5g sugar"],
-                  },
-                  {
-                    title: "Egg Fried Rice",
-                    key: "item10",
-                    emoji: "🍚",
-                    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
-                    calories: 280,
-                    content: ["50g rice", "15g egg", "10g peas", "5g carrot"],
-                  },
-                  {
-                    title: "Shrimp Sushi",
-                    key: "item11",
-                    emoji: "🍣",
-                    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
-                    calories: 190,
-                    content: ["30g rice", "20g shrimp", "5g seaweed", "5g cucumber"],
-                  },
-                  {
-                    title: "Cheeseburger",
-                    key: "item12",
-                    emoji: "🍔",
-                    image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=400&q=80",
-                    calories: 303,
-                    content: ["60g beef", "20g cheese", "40g bun", "10g lettuce"],
-                  },
-                  {
-                    title: "Fried Shrimp",
-                    key: "item15",
-                    emoji: "🍤",
-                    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
-                    calories: 240,
-                    content: ["50g shrimp", "20g flour", "10g oil", "5g spices"],
-                  },
-                  {
-                    title: "Veggie Pizza",
-                    key: "item16",
-                    emoji: "🍕",
-                    image: "https://images.unsplash.com/photo-1542281286-9e0a16bb7366?auto=format&fit=crop&w=400&q=80",
-                    calories: 330,
-                    content: ["60g dough", "30g tomato sauce", "20g cheese", "20g veggies"],
-                  },
-                ]}
-                renderItem={({ item }) => (
-                  <FoodComponent
-                    title={item.title}
-                    key={item.key}
-                    emoji={item.emoji}
-                    image={item.image}
-                    calories={item.calories}
-                    content={item.content.join(",   ")}
-                  />
-                )}
-                scrollEnabled={false}
-                keyExtractor={(item) => item.key}
-                        ListEmptyComponent={
-                            <Pressable onPress={() => {}}>
-                              <View className="px-5 my-8 shadow-lg ">
-                                <View className="bg-neutral-100 rounded-2xl p-5 shadow-md">
-                                  <View className="items-center px-4">
-                                    <View className="items-center gap-3">
-                                      <Ionicons name="add-circle" size={58} color="#9ca3af" />
-                                      <Text className="text-sm text-gray-400">
-                                        Tap + to add your first meal of the day
-                                      </Text>
-                                    </View>
-                                  </View>
-                                </View>
-                              </View>
-                            </Pressable>
-                          }
-              />
-            </View>
+          <View className="px-5 mt-8">
+            <Text className="text-gray-700 text-3xl font-bold mb-2">
+              Recently Uploaded
+            </Text>
+            <FlatList
+              ItemSeparatorComponent={
+                Platform.OS !== "android"
+                  ? ({ highlighted }: any) => (
+                      <View
+                        className={`h-[1px] bg-gray-200 ${highlighted ? "ml-0" : ""}`}
+                      />
+                    )
+                  : undefined
+              }
+              data={[
+                {
+                  title: "Omelette",
+                  key: "item1",
+                  emoji: "🍳",
+                  image:
+                    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+                  calories: 240,
+                  content: ["15g egg", "10g cheese", "5g spinach"],
+                },
+                {
+                  title: "Avocado Toast",
+                  key: "item4",
+                  emoji: "🥑",
+                  image:
+                    "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80",
+                  calories: 210,
+                  content: ["50g bread", "30g avocado", "5g olive oil"],
+                },
+                {
+                  title: "Steak",
+                  key: "item6",
+                  emoji: "🥩",
+                  image:
+                    "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=400&q=80",
+                  calories: 400,
+                  content: ["80g beef", "10g butter", "5g pepper", "5g garlic"],
+                },
+                {
+                  title: "Milkshake",
+                  key: "item9",
+                  emoji: "🥤",
+                  image:
+                    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+                  calories: 220,
+                  content: [
+                    "100g milk",
+                    "20g ice cream",
+                    "10g chocolate",
+                    "5g sugar",
+                  ],
+                },
+                {
+                  title: "Egg Fried Rice",
+                  key: "item10",
+                  emoji: "🍚",
+                  image:
+                    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+                  calories: 280,
+                  content: ["50g rice", "15g egg", "10g peas", "5g carrot"],
+                },
+                {
+                  title: "Shrimp Sushi",
+                  key: "item11",
+                  emoji: "🍣",
+                  image:
+                    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+                  calories: 190,
+                  content: [
+                    "30g rice",
+                    "20g shrimp",
+                    "5g seaweed",
+                    "5g cucumber",
+                  ],
+                },
+                {
+                  title: "Cheeseburger",
+                  key: "item12",
+                  emoji: "🍔",
+                  image:
+                    "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=400&q=80",
+                  calories: 303,
+                  content: ["60g beef", "20g cheese", "40g bun", "10g lettuce"],
+                },
+                {
+                  title: "Fried Shrimp",
+                  key: "item15",
+                  emoji: "🍤",
+                  image:
+                    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+                  calories: 240,
+                  content: ["50g shrimp", "20g flour", "10g oil", "5g spices"],
+                },
+                {
+                  title: "Veggie Pizza",
+                  key: "item16",
+                  emoji: "🍕",
+                  image:
+                    "https://images.unsplash.com/photo-1542281286-9e0a16bb7366?auto=format&fit=crop&w=400&q=80",
+                  calories: 330,
+                  content: [
+                    "60g dough",
+                    "30g tomato sauce",
+                    "20g cheese",
+                    "20g veggies",
+                  ],
+                },
+              ]}
+              renderItem={({ item }) => (
+                <FoodComponent
+                  title={item.title}
+                  key={item.key}
+                  emoji={item.emoji}
+                  image={item.image}
+                  calories={item.calories}
+                  content={item.content.join(",   ")}
+                />
+              )}
+              scrollEnabled={false}
+              keyExtractor={(item) => item.key}
+              ListEmptyComponent={
+                <Pressable onPress={() => {}}>
+                  <View className="px-5 my-8 shadow-lg ">
+                    <View className="bg-neutral-100 rounded-2xl p-5 shadow-md">
+                      <View className="items-center px-4">
+                        <View className="items-center gap-3">
+                          <Ionicons
+                            name="add-circle"
+                            size={58}
+                            color="#9ca3af"
+                          />
+                          <Text className="text-sm text-gray-400">
+                            Tap + to add your first meal of the day
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </Pressable>
+              }
+            />
+          </View>
 
           {/* Meals list (cards open modal) */}
           <View className="px-5 mt-8">
