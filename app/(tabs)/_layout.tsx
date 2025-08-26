@@ -36,6 +36,15 @@ export default function TabsLayout() {
           ),
         }}
       />
+       <Tabs.Screen
+        name="add"
+        options={{
+          title: "Add",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="add" color={color} size={size} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="stats"
         options={{
