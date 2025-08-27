@@ -1,19 +1,35 @@
+// app/index.tsx
 import { useEffect, useState } from "react";
 import { Redirect } from "expo-router";
+import { View, ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Index() {
   const [firstTime, setFirstTime] = useState<boolean | null>(null);
+  const { user, profileCompleted, loading } = useAuth();
 
   useEffect(() => {
-    const checkFirstTime = async () => {
+    const checkOnboarding = async () => {
       const seen = await AsyncStorage.getItem("seenOnboarding");
       setFirstTime(!seen);
     };
-    checkFirstTime();
+    checkOnboarding();
   }, []);
 
-  if (firstTime === null) return null; // splash loading
+  // 🔹 Splash while waiting
+  if (firstTime === null || loading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
-  return firstTime ? <Redirect href="/onboarding" /> : <Redirect href="/(tabs)/home" />;
+  if (firstTime) return <Redirect href="/onboarding" />;
+  if (!user) return <Redirect href="/(auth)/login" />;
+  if (profileCompleted === false) return <Redirect href="/(profile-setup)/nameScreen" />;
+  return <Redirect href="/(tabs)/home" />;
 }
+
+
