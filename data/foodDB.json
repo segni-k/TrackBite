@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "name": "Shiro",
+    "category": "Ethiopian",
+    "nutrition": {
+      "small": { "calories": 200, "protein": 8, "carbs": 20, "fat": 6 },
+      "medium": { "calories": 350, "protein": 14, "carbs": 35, "fat": 10 },
+      "large": { "calories": 500, "protein": 20, "carbs": 50, "fat": 16 }
+    }
+  },
+  {
+    "id": "2",
+    "name": "Misir Wot",
+    "category": "Ethiopian",
+    "nutrition": {
+      "small": { "calories": 180, "protein": 7, "carbs": 18, "fat": 5 },
+      "medium": { "calories": 320, "protein": 12, "carbs": 32, "fat": 9 },
+      "large": { "calories": 480, "protein": 18, "carbs": 48, "fat": 14 }
+    }
+  },
+  {
+    "id": "3",
+    "name": "Injera",
+    "category": "Ethiopian",
+    "nutrition": {
+      "small": { "calories": 150, "protein": 4, "carbs": 30, "fat": 1 },
+      "medium": { "calories": 250, "protein": 7, "carbs": 50, "fat": 2 },
+      "large": { "calories": 400, "protein": 11, "carbs": 80, "fat": 3 }
+    }
+  },
+  {
+    "id": "4",
+    "name": "Apple",
+    "category": "International",
+    "nutrition": {
+      "small": { "calories": 50, "protein": 0.3, "carbs": 14, "fat": 0.2 },
+      "medium": { "calories": 80, "protein": 0.5, "carbs": 22, "fat": 0.3 },
+      "large": { "calories": 120, "protein": 0.7, "carbs": 33, "fat": 0.5 }
+    }
+  },
+  {
+    "id": "5",
+    "name": "Banana",
+    "category": "International",
+    "nutrition": {
+      "small": { "calories": 90, "protein": 1.1, "carbs": 23, "fat": 0.3 },
+      "medium": { "calories": 120, "protein": 1.5, "carbs": 30, "fat": 0.4 },
+      "large": { "calories": 150, "protein": 1.9, "carbs": 38, "fat": 0.5 }
+    }
+  }
+]
