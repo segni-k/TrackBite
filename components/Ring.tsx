@@ -7,7 +7,7 @@ type Props = {
   size?: number;
   stroke?: number;
   value: number; // current grams
-  goal: number;  // target grams
+  goal?: number;  // target grams
   label: string;
   color: string; // e.g. "#ef4444"
 };
