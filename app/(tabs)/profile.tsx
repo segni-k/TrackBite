@@ -409,7 +409,7 @@ export default function Profile() {
         <View className="mb-8 px-4 py-2 bg-white rounded-2xl shadow-md border-b border-l border-right border-gray-200">
           <Pressable
             className="py-4 border-b border-gray-200 flex-row items-center"
-            onPress={() => router.push("../../components/Terms")}
+            onPress={() => router.push("/(modals)/terms")}
           >
             <Ionicons name="document-text-outline" size={26} color="#333" />
             <Text className="ml-4 text-xl font-semibold text-gray-700">
@@ -418,14 +418,14 @@ export default function Profile() {
           </Pressable>
           <Pressable
             className="py-4 border-b border-gray-200 flex-row items-center"
-            onPress={() => router.push("../../components/privacy")}
+            onPress={() => router.push("/(modals)/privacy-policy")}
           >
             <Ionicons name="shield-checkmark-outline" size={26} color="#333" />
             <Text className="ml-4 text-xl font-semibold text-gray-700">Privacy Policy</Text>
           </Pressable>
           <Pressable
             className="py-4 border-b border-gray-200 flex-row items-center"
-            onPress={() => router.push("../../components/support")}
+            onPress={() => router.push("/(modals)/support")}
           >
             <MaterialIcons name="support-agent" size={26} color="#333" />
             <Text className="ml-4 text-xl font-semibold text-gray-700">Support Email</Text>
